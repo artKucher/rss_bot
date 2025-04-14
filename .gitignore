@@ -1,0 +1,5 @@
+.environment
+.idea
+pkg
+.vscode
+store.db
