@@ -1,12 +1,12 @@
-package main
+package app
 
 import "time"
 
 type RSSParsedInfo struct {
-	url              string
-	lastPostDateTime time.Time
-	telegramChatId   int64
-	keywords         []string
+	Url              string
+	LastPostDateTime time.Time
+	TelegramChatId   int64
+	Keywords         []string
 }
 
 type Post struct {

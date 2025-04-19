@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"database/sql"
@@ -8,8 +8,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func connectToDB() *sql.DB {
-	db, err := sql.Open("sqlite3", config.DatabasePath)
+func ConnectToDB() *sql.DB {
+	db, err := sql.Open("sqlite3", Config.DatabasePath)
 	if err != nil {
 		panic(err)
 	}
@@ -23,7 +23,7 @@ func connectToDB() *sql.DB {
 	return db
 }
 
-func getRSSUrl(db *sql.DB) ([]RSSParsedInfo, error) {
+func GetRSSUrl(db *sql.DB) ([]RSSParsedInfo, error) {
 	rows, err := db.Query("SELECT url, latest_post_datetime, telegram_chat_id, keywords FROM rss_sources")
 	if err != nil {
 		panic(err)
@@ -35,10 +35,10 @@ func getRSSUrl(db *sql.DB) ([]RSSParsedInfo, error) {
 	for rows.Next() {
 		var rss_info RSSParsedInfo
 		var joinedKeywords string
-		if err := rows.Scan(&rss_info.url, &rss_info.lastPostDateTime, &rss_info.telegramChatId, &joinedKeywords); err != nil {
+		if err := rows.Scan(&rss_info.Url, &rss_info.LastPostDateTime, &rss_info.TelegramChatId, &joinedKeywords); err != nil {
 			return rss_infos, err
 		}
-		rss_info.keywords = strings.Split(joinedKeywords, "|")
+		rss_info.Keywords = strings.Split(joinedKeywords, "|")
 		rss_infos = append(rss_infos, rss_info)
 	}
 
@@ -70,7 +70,7 @@ func deleteRSSUrl(db *sql.DB, url string, telegramChatId int64) {
 	}
 }
 
-func setLatestPostDateTime(db *sql.DB, url string, telegramChatId int64, latestPostDateTime time.Time) {
+func SetLatestPostDateTime(db *sql.DB, url string, telegramChatId int64, latestPostDateTime time.Time) {
 	_, err := db.Exec("UPDATE rss_sources SET latest_post_datetime = ? WHERE url = ? AND telegram_chat_id = ?", latestPostDateTime, url, telegramChatId)
 	if err != nil {
 		panic(err)

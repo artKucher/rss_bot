@@ -1,21 +1,23 @@
-package main
+package app
 
 import (
 	"database/sql"
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"slices"
 	"strings"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func buildBot() *tgbotapi.BotAPI {
-	bot, err := tgbotapi.NewBotAPI(config.TelegramToken)
+func BuildBot() *tgbotapi.BotAPI {
+	bot, err := tgbotapi.NewBotAPI(Config.TelegramToken)
 	if err != nil {
 		panic(err)
 	}
 	return bot
 }
 
-func handleIncomingMessages(bot *tgbotapi.BotAPI, db *sql.DB) {
+func HandleIncomingMessages(bot *tgbotapi.BotAPI, db *sql.DB) {
 	updateConfig := tgbotapi.NewUpdate(0)
 	updateConfig.Timeout = 60 * 3
 	updates := bot.GetUpdatesChan(updateConfig)
@@ -24,12 +26,17 @@ func handleIncomingMessages(bot *tgbotapi.BotAPI, db *sql.DB) {
 		if update.Message == nil {
 			continue
 		}
-		fmt.Printf("[%s] %s\n", update.Message.From.UserName, update.Message.Text)
+		fmt.Printf("[%s] %d %s\n", update.Message.From.UserName, update.Message.Chat.ID, update.Message.Text)
+		if !slices.Contains(Config.AllowedChatsIds, fmt.Sprintf("%d", update.Message.Chat.ID)) {
+			message := tgbotapi.NewMessage(update.Message.Chat.ID, "Sorry, you are not allowed to use this bot")
+			bot.Send(message)
+			continue
+		}
 
 		parsedMessage := strings.Split(update.Message.Text, "\n")
 		rssUrl := parsedMessage[0]
 
-		_, err := getNewPosts(rssUrl)
+		_, err := GetNewPosts(rssUrl)
 		if err != nil {
 			message := tgbotapi.NewMessage(update.Message.Chat.ID, "Error getting posts")
 			bot.Send(message)

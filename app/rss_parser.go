@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"strings"
@@ -7,7 +7,7 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-func getNewPosts(url string) ([]Post, error) {
+func GetNewPosts(url string) ([]Post, error) {
 	rss_parser := gofeed.NewParser()
 	feed, err := rss_parser.ParseURL(url)
 	if err != nil {
@@ -28,7 +28,7 @@ func getNewPosts(url string) ([]Post, error) {
 	return posts, nil
 }
 
-func filterPosts(posts []Post, lastPostDateTime time.Time, keywords []string) []Post {
+func FilterPosts(posts []Post, lastPostDateTime time.Time, keywords []string) []Post {
 	var filteredPosts []Post
 
 	for _, post := range posts {
