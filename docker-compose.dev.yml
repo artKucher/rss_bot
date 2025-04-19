@@ -3,7 +3,7 @@ services:
     image: rss-bot
     container_name: rss-bot
     build: .
-    command: go run *.go
+    command: go run main.go
     env_file:
       - .environment
     volumes:
