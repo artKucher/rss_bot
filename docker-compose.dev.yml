@@ -4,6 +4,7 @@ services:
     container_name: rss-bot
     build: .
     command: go run main.go
+    restart: always
     env_file:
       - .environment
     volumes:

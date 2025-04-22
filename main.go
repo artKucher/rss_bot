@@ -36,6 +36,7 @@ func processRSS(db *sql.DB, bot *tgbotapi.BotAPI) {
 		posts = app.FilterPosts(posts, rss_info.LastPostDateTime, rss_info.Keywords)
 		sendPostsToTelegram(bot, posts, rss_info.TelegramChatId)
 		app.SetLatestPostDateTime(db, rss_info.Url, rss_info.TelegramChatId, current_time)
+		time.Sleep(10 * time.Minute)
 	}
 
 	time.Sleep(time.Duration(app.Config.RssParsePeriod) * time.Hour)
