@@ -36,16 +36,16 @@ func HandleIncomingMessages(bot *tgbotapi.BotAPI, db *sql.DB) {
 		parsedMessage := strings.Split(update.Message.Text, "\n")
 		rssUrl := parsedMessage[0]
 
-		_, err := GetNewPosts(rssUrl)
-		if err != nil {
-			message := tgbotapi.NewMessage(update.Message.Chat.ID, "Error getting posts")
+		if checkRSSUrlAlreadyExists(db, rssUrl, update.Message.Chat.ID) {
+			deleteRSSUrl(db, rssUrl, update.Message.Chat.ID)
+			message := tgbotapi.NewMessage(update.Message.Chat.ID, "RSS URL deleted")
 			bot.Send(message)
 			continue
 		}
 
-		if checkRSSUrlAlreadyExists(db, rssUrl, update.Message.Chat.ID) {
-			deleteRSSUrl(db, rssUrl, update.Message.Chat.ID)
-			message := tgbotapi.NewMessage(update.Message.Chat.ID, "RSS URL deleted")
+		_, err := GetNewPosts(rssUrl)
+		if err != nil {
+			message := tgbotapi.NewMessage(update.Message.Chat.ID, "Error getting posts")
 			bot.Send(message)
 			continue
 		}
