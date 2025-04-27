@@ -34,18 +34,10 @@ func processRSS(db *sql.DB, bot *tgbotapi.BotAPI) {
 			panic(err)
 		}
 		posts = app.FilterPosts(posts, rss_info.LastPostDateTime, rss_info.Keywords)
-		sendPostsToTelegram(bot, posts, rss_info.TelegramChatId)
+		app.SendPostsToTelegram(bot, posts, rss_info.TelegramChatId)
 		app.SetLatestPostDateTime(db, rss_info.Url, rss_info.TelegramChatId, current_time)
 		time.Sleep(10 * time.Minute)
 	}
 
 	time.Sleep(time.Duration(app.Config.RssParsePeriod) * time.Hour)
-}
-
-func sendPostsToTelegram(bot *tgbotapi.BotAPI, posts []app.Post, chatId int64) {
-	for _, post := range posts {
-		content := fmt.Sprintf("%s\n%s\n%s", post.Title, post.Description, post.Link)
-		msg := tgbotapi.NewMessage(chatId, content)
-		bot.Send(msg)
-	}
 }

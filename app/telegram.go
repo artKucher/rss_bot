@@ -61,3 +61,11 @@ func HandleIncomingMessages(bot *tgbotapi.BotAPI, db *sql.DB) {
 
 	}
 }
+
+func SendPostsToTelegram(bot *tgbotapi.BotAPI, posts []Post, chatId int64) {
+	for _, post := range posts {
+		content := fmt.Sprintf("%s\n\n%s", post.Title, post.Link)
+		msg := tgbotapi.NewMessage(chatId, content)
+		bot.Send(msg)
+	}
+}
